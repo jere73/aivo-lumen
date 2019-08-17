@@ -59,7 +59,11 @@ class ApiController extends Controller
             ], $error->status);
 
         } catch (\Exception $e) {
-            return $e;
+            
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+
         }
 
         return response()->json($resource, 200);
