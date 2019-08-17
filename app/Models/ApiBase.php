@@ -53,9 +53,4 @@ class ApiBase
         return $api_response;
     }
 
-    public function getToken()
-    {
-        return $this->token;
-    }
-
 }

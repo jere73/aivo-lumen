@@ -9,7 +9,6 @@ class ApiLogin
 
     private $url_login;
     private $client;
-    private $token;
 
     public function __construct()
     {
@@ -19,26 +18,42 @@ class ApiLogin
 
     public function login()
     {
-        $preformatted = config('spotify.credentials.client_id') . ':' . config('spotify.credentials.client_secret');
 
-        $encrypted = trim(base64_encode($preformatted));
-        $complete  = 'Basic ' . $encrypted;
+        $token = null;
 
-        $response = $this->client->post($this->url_login, [
-            'headers'     => [
-                'Content-Type'  => 'application/x-www-form-urlencoded; charset=utf-8',
-                'Authorization' => $complete,
-            ],
-            'form_params' => [
-                'grant_type' => 'client_credentials',
-            ],
-        ]);
+        try {
+            
+            $preformatted = config('spotify.credentials.client_id') . ':' . config('spotify.credentials.client_secret');
 
-        $data_api = json_decode($response->getBody()->getContents());
+            $encrypted = trim(base64_encode($preformatted));
+            $complete  = 'Basic ' . $encrypted;
+    
+            $response = $this->client->post($this->url_login, [
+                'headers'     => [
+                    'Content-Type'  => 'application/x-www-form-urlencoded; charset=utf-8',
+                    'Authorization' => $complete,
+                ],
+                'form_params' => [
+                    'grant_type' => 'client_credentials',
+                ],
+            ]);
+    
+            $data_api = json_decode($response->getBody()->getContents());
+            
+            $token = $data_api->token_type . ' ' . $data_api->access_token;
+
+        } catch (ServerException | ClientException $th) {
+
+            throw $th;
         
-        $this->token = $data_api->token_type . ' ' . $data_api->access_token;
+        } catch (\Exception $e) {
 
-        return $this->token;
+            throw $e;
+
+        }
+
+        return $token;
+
     }
 
 }

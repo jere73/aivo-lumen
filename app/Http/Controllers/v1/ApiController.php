@@ -24,6 +24,12 @@ class ApiController extends Controller
 
         $resource = [];
 
+        $this->validate($request, [
+            'q' => 'required',
+        ], [
+            'q.required' => 'Debe ingresar un nombre de artista.',
+        ]);
+
         try {
 
             $artist     = $request->get('q');
@@ -46,8 +52,11 @@ class ApiController extends Controller
 
         } catch (ServerException | ClientException $th) {
 
-            $error = json_decode($th->getResponse()->getBody()->getContents());
-            return response()->json([$error], $error->error->status);
+            $error = json_decode($th->getResponse()->getBody()->getContents())->error;
+
+            return response()->json([
+                'error' => $error->message,
+            ], $error->status);
 
         } catch (\Exception $e) {
             return $e;
