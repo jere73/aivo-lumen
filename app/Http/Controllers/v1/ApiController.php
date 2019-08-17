@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers\v1;
 
-use App\Http\Controllers\Controller;
+use App\Models\ApiBase;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class ApiController extends Controller
 {
 
+    private $apiBase;
+
     public function __construct()
     {
-        $client = new Client([
-            'base_uri' => 'https://api.spotify.com',
-        ]);
+        $this->apiBase = new ApiBase();
     }
 
     public function getAlbums(Request $request)
     {
-        dd('llega');
+        dd($this->apiBase->getToken());
+
+        $this->apiBase->get('artists/{id}/albums');
     }
 }
