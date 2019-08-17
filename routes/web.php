@@ -17,6 +17,6 @@
 
 $router->group(['namespace' => 'v1', 'prefix' => 'api'], function () use ($router) {
     $router->group(['prefix' => 'v1'], function () use ($router) {
-        $router->get('albums', 'ApiController@getAlbums');
+        $router->get('albums', 'ApiController@getAlbumsByArtist');
     });
 });

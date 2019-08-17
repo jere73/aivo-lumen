@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 
 class ApiBase
 {
@@ -10,7 +12,7 @@ class ApiBase
     private $token;
 
     private $headers = [
-        'Content-type' => 'application/json'
+        'Content-type' => 'application/json',
     ];
 
     public function __construct()
@@ -24,24 +26,36 @@ class ApiBase
 
     }
 
-    public function getToken()
-    {
-        return $this->token;
-    }
-
     public function get($url, $headers = [])
     {
         $api_response = null;
 
-        $response = $this->client->get($url, [
-            'headers'     => [
-                'Authorization' => $this->token,
-            ]
-        ]);
+        try {
 
-        $api_response = json_decode($response->getBody()->getContents());
+            $response = $this->client->get($url, [
+                'headers' => [
+                    'Authorization' => $this->token,
+                ],
+            ]);
+
+            $api_response = json_decode($response->getBody()->getContents());
+
+        } catch (ServerException | ClientException $th) {
+
+            throw $th;
+        
+        } catch (\Exception $e) {
+
+            throw $e;
+
+        }
 
         return $api_response;
+    }
+
+    public function getToken()
+    {
+        return $this->token;
     }
 
 }
