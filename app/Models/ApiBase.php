@@ -9,6 +9,10 @@ class ApiBase
     private $client;
     private $token;
 
+    private $headers = [
+        'Content-type' => 'application/json'
+    ];
+
     public function __construct()
     {
         $this->client = new Client([
@@ -17,7 +21,6 @@ class ApiBase
 
         $apiLogin    = new ApiLogin();
         $this->token = $apiLogin->login();
-        // $this->token = $login->getToken();
 
     }
 
@@ -26,5 +29,19 @@ class ApiBase
         return $this->token;
     }
 
+    public function get($url, $headers = [])
+    {
+        $api_response = null;
+
+        $response = $this->client->get($url, [
+            'headers'     => [
+                'Authorization' => $this->token,
+            ]
+        ]);
+
+        $api_response = json_decode($response->getBody()->getContents());
+
+        return $api_response;
+    }
 
 }
